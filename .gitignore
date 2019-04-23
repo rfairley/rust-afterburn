@@ -1,0 +1,5 @@
+*.crate
+*.tar.gz
+.build
+.buildroot
+rpms
