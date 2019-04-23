@@ -18,34 +18,6 @@ Source1:        https://github.com/coreos/afterburn/releases/download/v%{version
 ExclusiveArch:  %{rust_arches}
 
 BuildRequires:  rust-packaging
-# BuildRequires:  (crate(base64/default) >= 0.10.1 with crate(base64/default) < 0.11.0)
-# BuildRequires:  (crate(byteorder/default) >= 1.3.0 with crate(byteorder/default) < 2.0.0)
-# BuildRequires:  (crate(clap/default) >= 2.33.0 with crate(clap/default) < 3.0.0)
-# BuildRequires:  (crate(error-chain) >= 0.12.0 with crate(error-chain) < 0.13.0)
-# BuildRequires:  (crate(hostname/default) >= 0.1.0 with crate(hostname/default) < 0.2.0)
-# BuildRequires:  (crate(ipnetwork/default) >= 0.14.0 with crate(ipnetwork/default) < 0.15.0)
-# BuildRequires:  (crate(mime/default) >= 0.3.0 with crate(mime/default) < 0.4.0)
-# BuildRequires:  (crate(nix/default) >= 0.13.0 with crate(nix/default) < 0.14.0)
-# BuildRequires:  (crate(openssh-keys/default) >= 0.4.1 with crate(openssh-keys/default) < 0.5.0)
-# BuildRequires:  (crate(openssl/default) >= 0.10.20 with crate(openssl/default) < 0.11.0)
-# BuildRequires:  (crate(pnet/default) >= 0.22.0 with crate(pnet/default) < 0.23.0)
-# BuildRequires:  (crate(reqwest/default) >= 0.9.15 with crate(reqwest/default) < 0.10.0)
-# BuildRequires:  (crate(serde-xml-rs/default) >= 0.3.0 with crate(serde-xml-rs/default) < 0.4.0)
-# BuildRequires:  (crate(serde/default) >= 1.0.0 with crate(serde/default) < 2.0.0)
-# BuildRequires:  (crate(serde_derive/default) >= 1.0.0 with crate(serde_derive/default) < 2.0.0)
-# BuildRequires:  (crate(serde_json/default) >= 1.0.0 with crate(serde_json/default) < 2.0.0)
-# BuildRequires:  (crate(slog-async/default) >= 2.1.0 with crate(slog-async/default) < 3.0.0)
-# BuildRequires:  (crate(slog-scope/default) >= 4.1.0 with crate(slog-scope/default) < 4.2.0)
-# BuildRequires:  (crate(slog-term/default) >= 2.2.0 with crate(slog-term/default) < 3.0.0)
-# BuildRequires:  (crate(slog/default) >= 2.0.0 with crate(slog/default) < 3.0.0)
-# BuildRequires:  (crate(slog/max_level_trace) >= 2.0.0 with crate(slog/max_level_trace) < 3.0.0)
-# BuildRequires:  (crate(slog/release_max_level_info) >= 2.0.0 with crate(slog/release_max_level_info) < 3.0.0)
-# BuildRequires:  (crate(tempdir/default) >= 0.3.0 with crate(tempdir/default) < 0.4.0)
-# BuildRequires:  (crate(tempfile/default) >= 3.0.7 with crate(tempfile/default) < 4.0.0)
-# BuildRequires:  (crate(users/default) >= 0.9.1 with crate(users/default) < 0.10.0)
-%if %{with check}
-# BuildRequires:  (crate(mockito/default) >= 0.17.0 with crate(mockito/default) < 0.18.0)
-%endif
 
 %global _description \
 A simple cloud provider agent
@@ -65,6 +37,7 @@ Summary:        %{summary}
 %{_unitdir}/afterburn.service
 %{_unitdir}/afterburn-checkin.service
 %{_unitdir}/afterburn-firstboot-checkin.service
+%{_unitdir}/afterburn-sshkeys@.service
 
 %prep
 %autosetup -n %{crate}-%{version_no_tilde} -a 1
@@ -101,10 +74,13 @@ EOF
   systemd/afterburn-checkin.service
 %{__install} -Dpm0644 -t %{buildroot}%{_unitdir} \
   systemd/afterburn-firstboot-checkin.service
+# Based on https://github.com/coreos/afterburn/blob/master/Makefile
 sed -e 's,@DEFAULT_INSTANCE@,'core',' < \
   systemd/afterburn-sshkeys@.service.in > \
   systemd/afterburn-sshkeys@.service.tmp
 mv systemd/afterburn-sshkeys@.service.tmp \
+  systemd/afterburn-sshkeys@.service
+%{__install} -Dpm0644 -t %{buildroot}%{_unitdir} \
   systemd/afterburn-sshkeys@.service
 
 %if %{with check}
