@@ -18,6 +18,8 @@ Source1:        https://github.com/coreos/afterburn/releases/download/v%{version
 ExclusiveArch:  %{rust_arches}
 
 BuildRequires:  rust-packaging
+BuildRequires:  openssl-devel
+BuildRequires:  systemd
 
 %global _description \
 A simple cloud provider agent
